@@ -40,12 +40,12 @@ export function ThemeToggle() {
 					<span className='sr-only'>Toggle theme</span>
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className='rounded-[20px] p-2 shadow-spread min-w-[12rem] font-medium' align='end' sideOffset={13}>
+			<DropdownMenuContent className='rounded-lg p-2 shadow-spread min-w-[12rem] font-medium' align='end' sideOffset={13}>
 				{THEME_OPTIONS.map((val) => (
 					<DropdownMenuItem
 						key={val.id}
 						className={cn(
-							'rounded-xl capitalize py-2 px-3 text-xs text-muted-foreground focus:text-muted-foreground',
+							'rounded-md capitalize py-2 px-3 text-xs text-muted-foreground focus:text-muted-foreground',
 							`${theme === val.value && 'text-foreground focus:text-foreground'}`,
 						)}
 						onClick={() => setTheme(val.value)}
