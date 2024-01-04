@@ -2,8 +2,9 @@ import { SelectedMediaDevice } from '@/lib/types';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 export interface MediaDeviceState {
-	devices: MediaDeviceInfo[];
+	devices: Pick<MediaDeviceInfo, 'deviceId' | 'groupId' | 'kind' | 'label'>[];
 	selectedDevices: SelectedMediaDevice;
+	streamLoading: boolean;
 }
 
 const initialState: MediaDeviceState = {
@@ -13,6 +14,7 @@ const initialState: MediaDeviceState = {
 		audiooutput: null,
 		videoinput: null,
 	},
+	streamLoading: true,
 };
 
 const slice = createSlice({
@@ -25,8 +27,11 @@ const slice = createSlice({
 		setselecteddevices: (state, action: PayloadAction<Partial<MediaDeviceState['selectedDevices']>>) => {
 			state.selectedDevices = { ...state.selectedDevices, ...action.payload };
 		},
+		setstreamloading: (state, action: PayloadAction<MediaDeviceState['streamLoading']>) => {
+			state.streamLoading = action.payload;
+		},
 	},
 });
 
-export const { setdevices, setselecteddevices } = slice.actions;
+export const { setdevices, setselecteddevices, setstreamloading } = slice.actions;
 export default slice.reducer;
