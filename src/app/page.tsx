@@ -1,3 +1,4 @@
+import Footer from '@/components/global/footer';
 import Header from '@/components/global/header';
 import About from '@/components/pages';
 import { Fragment } from 'react';
@@ -14,6 +15,7 @@ export default function Home() {
 				</section>
 				<About />
 			</main>
+			<Footer />
 		</Fragment>
 	);
 }
