@@ -1,4 +1,5 @@
 import Header from '@/components/global/header';
+import About from '@/components/pages';
 import { Fragment } from 'react';
 
 export default function Home() {
@@ -7,10 +8,11 @@ export default function Home() {
 			<Header />
 			<main>
 				<section>
-					<div>
+					<div className='max-w-maxi mx-auto min-h-hvh'>
 						<p>Hello world</p>
 					</div>
 				</section>
+				<About />
 			</main>
 		</Fragment>
 	);
