@@ -66,6 +66,51 @@
 		--ring: 24 5.7% 82.9%;
 		--spread: rgba(255, 255, 255, 0.075) 0px 24px 48px;
 	}
+
+	*,
+	*::before,
+	*::after {
+		padding: 0;
+		margin: 0;
+		box-sizing: border-box;
+		scroll-behavior: smooth;
+	}
+
+	html {
+		scrollbar-gutter: stable;
+	}
+
+	::selection {
+		color: hsl(var(--background));
+		background-color: hsl(var(--foreground));
+	}
+
+	::-webkit-scrollbar {
+		width: 10px;
+		background-color: hsl(var(--background));
+	}
+
+	::-webkit-scrollbar-track {
+		background-color: hsl(var(--background));
+	}
+
+	::-webkit-scrollbar-thumb {
+		background-color: hsl(var(--secondary));
+		transition-duration: 300ms;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background-color: hsl(var(--primary) / 0.15);
+		outline: none;
+	}
+
+	body {
+		margin: 0;
+	}
+
+	body[style] {
+		margin-right: 0px !important;
+	}
 }
 
 @layer base {
