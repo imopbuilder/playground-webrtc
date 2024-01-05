@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SelectedMediaDevice } from '@/lib/types';
 import { cn } from '@/lib/utils/cn';
-import { Fragment, MutableRefObject, RefObject, useEffect } from 'react';
+import { Fragment, MutableRefObject, RefObject } from 'react';
 
 export function Webrtc() {
 	const { stream, videoRef } = useMediaDeviceInfo();
@@ -37,7 +37,7 @@ function MediaDevices({ stream, videoRef }: { stream: Stream; videoRef: VideoRef
 			<Accordion type='multiple'>
 				<AudioInputDevices stream={stream} videoRef={videoRef} />
 				<VideoInputDevices stream={stream} videoRef={videoRef} />
-				<AudioOutputDevices />
+				<AudioOutputDevices videoRef={videoRef} />
 			</Accordion>
 		</div>
 	);
@@ -198,43 +198,16 @@ function VideoInputDevices({ stream, videoRef }: { stream: Stream; videoRef: Vid
 	);
 }
 
-function AudioOutputDevices() {
+function AudioOutputDevices({ videoRef }: { videoRef: VideoRef }) {
 	const { devices, audioContextLoading } = useAppSelector((state) => state.mediaDeviceSlice);
 	const audioOutputDevices = devices.filter((device) => device.kind === 'audiooutput' && device.deviceId !== 'default');
 
 	function handleValueChange(val: string) {
-		console.log(val);
+		dispatch(setaudiocontextloading(true));
+		videoRef.current?.setSinkId?.(val);
+		dispatch(setselecteddevices({ audiooutput: val }));
+		dispatch(setaudiocontextloading(false));
 	}
-
-	// Set the sinkId using the AudioContext api from the audiooutput device
-	useEffect(() => {
-		if (!('setSinkId' in AudioContext.prototype)) {
-			console.log('AudioContext.setSinkId is not supported in your device');
-			return;
-		}
-
-		async function setAudioOutput() {
-			if (devices.length !== 0) {
-				dispatch(setaudiocontextloading(true));
-				const localDeviceId = localStorage.getItem('audiooutput');
-				const audioOutputs = devices.filter((device) => device.kind === 'audiooutput' && device.deviceId !== 'default');
-				const audioContext = new AudioContext();
-
-				// Pick the first available audio output.
-				const deviceId = localDeviceId ?? audioOutputs[0].deviceId;
-				//@ts-ignore
-				await audioContext.setSinkId(deviceId);
-
-				dispatch(setaudiocontextloading(false));
-				dispatch(setselecteddevices({ audiooutput: deviceId }));
-
-				if (deviceId !== localDeviceId) {
-					localStorage.setItem('audiooutput', deviceId);
-				}
-			}
-		}
-		setAudioOutput();
-	}, [devices]);
 
 	return (
 		<Fragment>
