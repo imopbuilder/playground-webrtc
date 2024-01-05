@@ -1,6 +1,6 @@
 import Footer from '@/components/global/footer';
 import Header from '@/components/global/header';
-import About from '@/components/pages';
+import About from '@/components/pages/home';
 import { Webrtc } from '@/components/pages/home/client';
 import { Fragment } from 'react';
 
