@@ -9,7 +9,7 @@ export function useMediaDeviceInfo() {
 	const stream = useRef<MediaStream>();
 	const videoRef = useRef<ElementRef<'video'>>(null);
 
-	// get the list of media devices
+	// Get the list of media devices
 	useEffect(() => {
 		// used to check the support of enumerateDevices in the mediaDevices
 		if (!navigator.mediaDevices?.enumerateDevices) {
@@ -24,6 +24,7 @@ export function useMediaDeviceInfo() {
 		getDeviceList();
 	}, []);
 
+	// Get the stream from the media-devices
 	useEffect(() => {
 		async function getMediaFromUser() {
 			stream.current = await navigator.mediaDevices.getUserMedia({
