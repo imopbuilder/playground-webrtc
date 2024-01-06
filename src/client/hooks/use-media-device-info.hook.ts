@@ -69,10 +69,6 @@ export function useMediaDeviceInfo() {
 			const tracks = stream.current.getTracks();
 			for (const track of tracks) {
 				const trackSettings = track.getSettings();
-				// console.log('-----------');
-				// console.log('Track: ', track);
-				// console.log('Track Settings: ', trackSettings);
-				// console.log('-----------');
 				const { deviceId } = trackSettings;
 				const kind = `${track.kind}input` as keyof SelectedMediaDevice;
 				const localDeviceId = localStorage.getItem(kind);
