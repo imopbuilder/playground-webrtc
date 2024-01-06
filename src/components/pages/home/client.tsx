@@ -3,6 +3,7 @@
 import { useMediaDeviceInfo } from '@/client/hooks/use-media-device-info.hook';
 import { dispatch, useAppSelector } from '@/client/store';
 import { MediaDeviceState, setaudiocontextloading, setselecteddevices, setstreamloading } from '@/client/store/slices/media-device-slice';
+import { CubeLoader } from '@/components/global/loader/cube';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -40,8 +41,8 @@ function Video({ videoRef }: { videoRef: VideoRef }) {
 
 	if (streamLoading)
 		return (
-			<div className='w-full'>
-				<p>Loading...</p>
+			<div className='w-full aspect-[1.33] bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-lg flex items-center justify-center'>
+				<CubeLoader />
 			</div>
 		);
 
