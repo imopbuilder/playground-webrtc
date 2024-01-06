@@ -6,7 +6,7 @@ export default function Footer() {
 		<footer className='border-t border-dashed'>
 			<div className='max-w-maxi mx-auto py-3'>
 				<div>
-					<p className='text-center text-muted-foreground text-sm'>
+					<p className='text-muted-foreground text-sm'>
 						Crafted by{' '}
 						<Button className='p-0 text-muted-foreground font-medium hover:text-foreground' variant='link' asChild>
 							<Link href={'/'} target='_black' rel='noreferrer'>
