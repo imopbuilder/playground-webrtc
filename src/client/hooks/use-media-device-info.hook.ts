@@ -2,6 +2,7 @@
 
 import { SelectedMediaDevice } from '@/lib/types';
 import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import { dispatch, useAppSelector } from '../store';
 import { setaudiocontextloading, setdevices, setselecteddevices, setstreamloading } from '../store/slices/media-device-slice';
 
@@ -13,7 +14,9 @@ export function useMediaDeviceInfo() {
 	async function getDeviceList() {
 		// used to check the support of enumerateDevices in the mediaDevices
 		if (!navigator.mediaDevices?.enumerateDevices) {
-			console.log('enumerateDevices is not supported in your device');
+			toast.warning('Unable to get device list!', {
+				description: 'Please use another browser',
+			});
 			return;
 		}
 
@@ -82,21 +85,23 @@ export function useMediaDeviceInfo() {
 		function getAudioOutput() {
 			// Set the sinkId using the AudioContext api from the audiooutput device
 			if (!('setSinkId' in AudioContext.prototype)) {
-				console.log('AudioContext.setSinkId is not supported in your device');
-			} else {
-				if (devices.length !== 0) {
-					const localDeviceId = localStorage.getItem('audiooutput');
-					// Pick the first available audio output.
-					const deviceId = localDeviceId ?? '';
+				toast.warning('Unable to setSinkId in video!', {
+					description: 'Please use another browser',
+				});
+				return;
+			}
+			if (devices.length !== 0) {
+				const localDeviceId = localStorage.getItem('audiooutput');
+				// Pick the first available audio output.
+				const deviceId = localDeviceId ?? '';
 
-					if (videoRef.current) videoRef.current.setSinkId?.(deviceId);
+				if (videoRef.current) videoRef.current.setSinkId?.(deviceId);
 
-					dispatch(setaudiocontextloading(false));
-					dispatch(setselecteddevices({ audiooutput: deviceId }));
+				dispatch(setaudiocontextloading(false));
+				dispatch(setselecteddevices({ audiooutput: deviceId }));
 
-					if (deviceId !== localDeviceId) {
-						localStorage.setItem('audiooutput', deviceId);
-					}
+				if (deviceId !== localDeviceId) {
+					localStorage.setItem('audiooutput', deviceId);
 				}
 			}
 		}
