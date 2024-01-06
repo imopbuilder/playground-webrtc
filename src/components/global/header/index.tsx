@@ -3,8 +3,8 @@ import { ThemeToggle } from '../theme-toggle';
 
 export default function Header() {
 	return (
-		<header className='border-b px-[4%]'>
-			<div className='max-w-maxi mx-auto h-16 flex items-center justify-between'>
+		<header className='border-b'>
+			<div className='max-w-maxi mx-auto px-[4%] h-16 flex items-center justify-between'>
 				<div className='flex items-center justify-center'>
 					<Link href={'/'} className='font-semibold'>
 						Playground webRTC
