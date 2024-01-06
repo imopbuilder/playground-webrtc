@@ -13,26 +13,41 @@ import { CubeLoader } from '@/components/global/loader/cube';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils/cn';
 import { Fragment, RefObject } from 'react';
 
 type VideoRef = RefObject<HTMLVideoElement>;
 
-export function Webrtc() {
+export function Webrtc({
+	defaultLayout,
+}: {
+	defaultLayout: number[];
+}) {
 	const { videoRef } = useMediaDeviceInfo();
+	const onLayout = (sizes: number[]) => {
+		document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`;
+	};
 
 	return (
-		<div className='flex items-start justify-center gap-5 md:flex-row flex-col-reverse'>
-			<MediaDevices videoRef={videoRef} />
-			<Video videoRef={videoRef} />
+		<div>
+			<ResizablePanelGroup className='gap-5' direction='horizontal' onLayout={onLayout}>
+				<ResizablePanel defaultSize={defaultLayout[0]}>
+					<MediaDevices videoRef={videoRef} />
+				</ResizablePanel>
+				<ResizableHandle withHandle />
+				<ResizablePanel defaultSize={defaultLayout[1]}>
+					<Video videoRef={videoRef} />
+				</ResizablePanel>
+			</ResizablePanelGroup>
 		</div>
 	);
 }
 
 function MediaDevices({ videoRef }: { videoRef: VideoRef }) {
 	return (
-		<div className='w-full md:w-2/5'>
+		<div>
 			<Accordion type='multiple'>
 				<AudioInputDevices />
 				<VideoInputDevices />
@@ -57,7 +72,7 @@ function Video({ videoRef }: { videoRef: VideoRef }) {
 	}
 
 	return (
-		<div className='w-full md:w-3/5'>
+		<div>
 			<Loader />
 			<video
 				ref={videoRef}

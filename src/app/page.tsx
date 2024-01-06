@@ -1,9 +1,12 @@
 import Footer from '@/components/global/footer';
 import Header from '@/components/global/header';
 import { Webrtc } from '@/components/pages/home/client';
+import { cookies } from 'next/headers';
 import { Fragment } from 'react';
 
 export default function Home() {
+	const defaultLayout = getDefaultLayout();
+
 	return (
 		<Fragment>
 			<Header />
@@ -11,7 +14,7 @@ export default function Home() {
 				<section>
 					<div className='max-w-maxi mx-auto px-[4%] min-h-hvh'>
 						<h3 className='scroll-m-20 pt-6 md:pt-8 pb-3 mb-5 text-2xl font-semibold tracking-tight border-b'>Media Settings</h3>
-						<Webrtc />
+						<Webrtc defaultLayout={defaultLayout} />
 					</div>
 				</section>
 				<section>
@@ -28,4 +31,12 @@ export default function Home() {
 			<Footer />
 		</Fragment>
 	);
+}
+
+function getDefaultLayout() {
+	const layout = cookies().get('react-resizable-panels:layout');
+	if (layout) {
+		return JSON.parse(layout.value);
+	}
+	return [40, 60];
 }
