@@ -1,5 +1,6 @@
 import ReduxProvider from '@/client/providers/redux-provider';
 import { ThemeProvider } from '@/client/providers/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
 import '@/styles/main.scss';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -22,6 +23,7 @@ export default function RootLayout({
 				<ReduxProvider>
 					<ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
 						{children}
+						<Toaster />
 					</ThemeProvider>
 				</ReduxProvider>
 			</body>
