@@ -87,7 +87,7 @@ function Devices({
 		if (loading) return <Skeleton className='h-3 mt-1 w-48 rounded-sm' />;
 
 		const deviceLabel = devices.find((device) => device.deviceId === selectedDevices[props.kind])?.label;
-		if (deviceLabel) return <span className='text-xs text-muted-foreground font-medium pl-0.5'>{deviceLabel}</span>;
+		if (deviceLabel) return <span className='text-xs text-muted-foreground font-medium pl-0.5 text-left'>{deviceLabel}</span>;
 		return <span className='text-xs text-muted-foreground font-medium pl-0.5'>- No device found -</span>;
 	}
 
