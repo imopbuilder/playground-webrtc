@@ -2,12 +2,13 @@
 
 import { SelectedMediaDevice } from '@/lib/types';
 import { useEffect, useRef } from 'react';
-import { dispatch } from '../store';
+import { dispatch, useAppSelector } from '../store';
 import { setaudiocontextloading, setdevices, setselecteddevices, setstreamloading } from '../store/slices/media-device-slice';
 
 export function useMediaDeviceInfo() {
 	const stream = useRef<MediaStream>();
 	const videoRef = useRef<HTMLVideoElement>(null);
+	const { selectedDevices } = useAppSelector((state) => state.mediaDeviceSlice);
 
 	// Get the list of media devices
 	useEffect(() => {
@@ -53,16 +54,15 @@ export function useMediaDeviceInfo() {
 		async function getMediaFromUser() {
 			stream.current = await navigator.mediaDevices.getUserMedia({
 				video: {
-					deviceId: localStorage.getItem('videoinput') ?? undefined,
+					deviceId: selectedDevices.videoinput ?? localStorage.getItem('videoinput') ?? undefined,
 				},
 				audio: {
-					deviceId: localStorage.getItem('audioinput') ?? undefined,
+					deviceId: selectedDevices.audioinput ?? localStorage.getItem('audioinput') ?? undefined,
 				},
 			});
 
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream.current;
-				dispatch(setstreamloading(false));
 			}
 
 			// update the constraints of the track with the state and inside localStorage of the user
@@ -78,6 +78,7 @@ export function useMediaDeviceInfo() {
 				const localDeviceId = localStorage.getItem(kind);
 
 				dispatch(setselecteddevices({ [kind]: deviceId }));
+				dispatch(setstreamloading(false));
 
 				if (deviceId && localDeviceId !== deviceId) {
 					localStorage.setItem(kind, deviceId);
@@ -94,7 +95,7 @@ export function useMediaDeviceInfo() {
 				}
 			}
 		};
-	}, []);
+	}, [selectedDevices.audioinput, selectedDevices.videoinput]);
 
 	return { stream, videoRef };
 }

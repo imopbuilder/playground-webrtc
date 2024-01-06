@@ -7,7 +7,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
-import { SelectedMediaDevice } from '@/lib/types';
 import { cn } from '@/lib/utils/cn';
 import { Fragment, MutableRefObject, RefObject } from 'react';
 
@@ -35,8 +34,8 @@ function MediaDevices({ stream, videoRef }: { stream: Stream; videoRef: VideoRef
 	return (
 		<div className='w-full'>
 			<Accordion type='multiple'>
-				<AudioInputDevices stream={stream} videoRef={videoRef} />
-				<VideoInputDevices stream={stream} videoRef={videoRef} />
+				<AudioInputDevices />
+				<VideoInputDevices />
 				<AudioOutputDevices videoRef={videoRef} />
 			</Accordion>
 		</div>
@@ -90,50 +89,13 @@ function Devices({
 	);
 }
 
-function AudioInputDevices({ stream, videoRef }: { stream: Stream; videoRef: VideoRef }) {
-	const { devices, selectedDevices, streamLoading } = useAppSelector((state) => state.mediaDeviceSlice);
+function AudioInputDevices() {
+	const { devices, streamLoading } = useAppSelector((state) => state.mediaDeviceSlice);
 	const audioInputDevices = devices.filter((device) => device.kind === 'audioinput');
 
 	async function handleValueChange(val: string) {
 		dispatch(setstreamloading(true));
-
-		// Stop both the audio and video track
-		if (stream.current) {
-			const tracks = stream.current.getTracks();
-			for (const track of tracks) {
-				track.stop();
-			}
-		}
-
-		// Create a new stream from the deviceId
-		stream.current = await navigator.mediaDevices.getUserMedia({
-			video: {
-				deviceId: selectedDevices.videoinput ?? undefined,
-			},
-			audio: {
-				deviceId: val,
-			},
-		});
-
-		if (videoRef.current) {
-			videoRef.current.srcObject = stream.current;
-			dispatch(setstreamloading(false));
-		}
-
-		// Update the stream settings in redux and in localStorage
-		const tracks = stream.current.getTracks();
-		for (const track of tracks) {
-			const trackSettings = track.getSettings();
-			const { deviceId } = trackSettings;
-			const kind = `${track.kind}input` as keyof SelectedMediaDevice;
-			const localDeviceId = localStorage.getItem(kind);
-
-			dispatch(setselecteddevices({ [kind]: deviceId }));
-
-			if (deviceId && localDeviceId !== deviceId) {
-				localStorage.setItem(kind, deviceId);
-			}
-		}
+		dispatch(setselecteddevices({ audioinput: val }));
 	}
 
 	return (
@@ -144,50 +106,13 @@ function AudioInputDevices({ stream, videoRef }: { stream: Stream; videoRef: Vid
 	);
 }
 
-function VideoInputDevices({ stream, videoRef }: { stream: Stream; videoRef: VideoRef }) {
-	const { devices, selectedDevices, streamLoading } = useAppSelector((state) => state.mediaDeviceSlice);
+function VideoInputDevices() {
+	const { devices, streamLoading } = useAppSelector((state) => state.mediaDeviceSlice);
 	const videoInputDevices = devices.filter((device) => device.kind === 'videoinput');
 
 	async function handleValueChange(val: string) {
 		dispatch(setstreamloading(true));
-
-		// Stop both the audio and video track
-		if (stream.current) {
-			const tracks = stream.current.getTracks();
-			for (const track of tracks) {
-				track.stop();
-			}
-		}
-
-		// Create a new stream from the deviceId
-		stream.current = await navigator.mediaDevices.getUserMedia({
-			video: {
-				deviceId: val,
-			},
-			audio: {
-				deviceId: selectedDevices.videoinput ?? undefined,
-			},
-		});
-
-		if (videoRef.current) {
-			videoRef.current.srcObject = stream.current;
-			dispatch(setstreamloading(false));
-		}
-
-		// Update the stream settings in redux and in localStorage
-		const tracks = stream.current.getTracks();
-		for (const track of tracks) {
-			const trackSettings = track.getSettings();
-			const { deviceId } = trackSettings;
-			const kind = `${track.kind}input` as keyof SelectedMediaDevice;
-			const localDeviceId = localStorage.getItem(kind);
-
-			dispatch(setselecteddevices({ [kind]: deviceId }));
-
-			if (deviceId && localDeviceId !== deviceId) {
-				localStorage.setItem(kind, deviceId);
-			}
-		}
+		dispatch(setselecteddevices({ videoinput: val }));
 	}
 
 	return (
