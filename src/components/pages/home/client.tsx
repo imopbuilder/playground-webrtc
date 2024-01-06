@@ -33,6 +33,7 @@ export function Webrtc() {
 function MediaDevices({ videoRef }: { videoRef: VideoRef }) {
 	return (
 		<div className='w-full'>
+			<h3 className='scroll-m-20 pt-8 pb-3 mb-5 text-2xl font-semibold tracking-tight border-b'>Media Settings</h3>
 			<Accordion type='multiple'>
 				<AudioInputDevices />
 				<VideoInputDevices />
@@ -57,11 +58,11 @@ function Video({ videoRef }: { videoRef: VideoRef }) {
 	}
 
 	return (
-		<div className={'w-full'}>
+		<div className='w-full min-h-hvh flex items-end justify-center'>
 			<Loader />
 			<video
 				ref={videoRef}
-				className={cn('w-full rounded-lg', videoLoading ? 'h-0' : 'h-auto')}
+				className={cn('w-full rounded-lg mb-5', videoLoading ? 'h-0' : 'h-auto')}
 				id='localVideo'
 				autoPlay
 				playsInline
