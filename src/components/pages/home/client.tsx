@@ -2,7 +2,13 @@
 
 import { useMediaDeviceInfo } from '@/client/hooks/use-media-device-info.hook';
 import { dispatch, useAppSelector } from '@/client/store';
-import { MediaDeviceState, setaudiocontextloading, setselecteddevices, setstreamloading } from '@/client/store/slices/media-device-slice';
+import {
+	MediaDeviceState,
+	setaudiocontextloading,
+	setselecteddevices,
+	setstreamloading,
+	setvideoloading,
+} from '@/client/store/slices/media-device-slice';
 import { CubeLoader } from '@/components/global/loader/cube';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
@@ -37,18 +43,31 @@ function MediaDevices({ videoRef }: { videoRef: VideoRef }) {
 }
 
 function Video({ videoRef }: { videoRef: VideoRef }) {
-	const { streamLoading } = useAppSelector((state) => state.mediaDeviceSlice);
+	const { videoLoading } = useAppSelector((state) => state.mediaDeviceSlice);
 
-	if (streamLoading)
-		return (
-			<div className='w-full aspect-[1.33] bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-lg flex items-center justify-center'>
-				<CubeLoader />
-			</div>
-		);
+	function Loader() {
+		if (videoLoading)
+			return (
+				<div className='w-full aspect-[1.33] bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-lg flex items-center justify-center'>
+					<CubeLoader />
+				</div>
+			);
+
+		return null;
+	}
 
 	return (
-		<div className='w-full'>
-			<video ref={videoRef} className='w-full h-auto rounded-lg' id='localVideo' autoPlay playsInline controls={false}>
+		<div className={'w-full'}>
+			<Loader />
+			<video
+				ref={videoRef}
+				className={cn('w-full rounded-lg', videoLoading ? 'h-0' : 'h-auto')}
+				id='localVideo'
+				autoPlay
+				playsInline
+				controls={false}
+				onLoadedData={() => dispatch(setvideoloading(false))}
+			>
 				<track kind='captions' />
 			</video>
 		</div>
@@ -109,6 +128,7 @@ function AudioInputDevices() {
 	async function handleValueChange(val: string) {
 		dispatch(setstreamloading(true));
 		dispatch(setselecteddevices({ audioinput: val }));
+		dispatch(setvideoloading(true));
 	}
 
 	return (
@@ -126,6 +146,7 @@ function VideoInputDevices() {
 	async function handleValueChange(val: string) {
 		dispatch(setstreamloading(true));
 		dispatch(setselecteddevices({ videoinput: val }));
+		dispatch(setvideoloading(true));
 	}
 
 	return (

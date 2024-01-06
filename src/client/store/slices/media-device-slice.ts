@@ -5,7 +5,8 @@ export interface MediaDeviceState {
 	devices: Pick<MediaDeviceInfo, 'deviceId' | 'groupId' | 'kind' | 'label'>[];
 	selectedDevices: SelectedMediaDevice;
 	streamLoading: boolean;
-	audioContextLoading: boolean
+	audioContextLoading: boolean;
+	videoLoading: boolean;
 }
 
 const initialState: MediaDeviceState = {
@@ -16,7 +17,8 @@ const initialState: MediaDeviceState = {
 		videoinput: null,
 	},
 	streamLoading: true,
-	audioContextLoading: true
+	audioContextLoading: true,
+	videoLoading: true,
 };
 
 const slice = createSlice({
@@ -35,8 +37,11 @@ const slice = createSlice({
 		setaudiocontextloading: (state, action: PayloadAction<MediaDeviceState['audioContextLoading']>) => {
 			state.audioContextLoading = action.payload;
 		},
+		setvideoloading: (state, action: PayloadAction<MediaDeviceState['videoLoading']>) => {
+			state.videoLoading = action.payload;
+		},
 	},
 });
 
-export const { setdevices, setselecteddevices, setstreamloading, setaudiocontextloading } = slice.actions;
+export const { setdevices, setselecteddevices, setstreamloading, setaudiocontextloading, setvideoloading } = slice.actions;
 export default slice.reducer;
