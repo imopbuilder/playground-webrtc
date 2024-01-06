@@ -8,49 +8,26 @@ import { setaudiocontextloading, setdevices, setselecteddevices, setstreamloadin
 export function useMediaDeviceInfo() {
 	const stream = useRef<MediaStream>();
 	const videoRef = useRef<HTMLVideoElement>(null);
-	const { selectedDevices } = useAppSelector((state) => state.mediaDeviceSlice);
+	const { devices, selectedDevices } = useAppSelector((state) => state.mediaDeviceSlice);
 
-	// Get the list of media devices
-	useEffect(() => {
+	async function getDeviceList() {
 		// used to check the support of enumerateDevices in the mediaDevices
 		if (!navigator.mediaDevices?.enumerateDevices) {
 			console.log('enumerateDevices is not supported in your device');
 			return;
 		}
 
-		async function getDeviceList() {
-			const mediaDevices = await navigator.mediaDevices.enumerateDevices();
-			dispatch(setdevices(mediaDevices.map(({ deviceId, groupId, kind, label }) => ({ deviceId, groupId, kind, label }))));
+		const mediaDevices = await navigator.mediaDevices.enumerateDevices();
+		dispatch(setdevices(mediaDevices.map(({ deviceId, groupId, kind, label }) => ({ deviceId, groupId, kind, label }))));
+	}
 
-			// Set the sinkId using the AudioContext api from the audiooutput device
-			if (!('setSinkId' in AudioContext.prototype)) {
-				console.log('AudioContext.setSinkId is not supported in your device');
-				return;
-			}
-
-			if (mediaDevices.length !== 0) {
-				dispatch(setaudiocontextloading(true));
-				const localDeviceId = localStorage.getItem('audiooutput');
-				const audioOutputs = mediaDevices.filter((device) => device.kind === 'audiooutput' && device.deviceId !== 'default');
-
-				// Pick the first available audio output.
-				const deviceId = localDeviceId ?? audioOutputs[0].deviceId;
-
-				if (videoRef.current) videoRef.current.setSinkId?.(deviceId);
-
-				dispatch(setaudiocontextloading(false));
-				dispatch(setselecteddevices({ audiooutput: deviceId }));
-
-				if (deviceId !== localDeviceId) {
-					localStorage.setItem('audiooutput', deviceId);
-				}
-			}
-		}
+	useEffect(() => {
+		// Get the list of media devices
 		getDeviceList();
 	}, []);
 
-	// Get the stream from the media-devices
 	useEffect(() => {
+		// Get the stream from the media-devices
 		async function getMediaFromUser() {
 			stream.current = await navigator.mediaDevices.getUserMedia({
 				video: {
@@ -81,7 +58,14 @@ export function useMediaDeviceInfo() {
 				}
 			}
 		}
-		getMediaFromUser();
+		getMediaFromUser().then(async () => {
+			const mediaPermission = localStorage.getItem('media-permission');
+
+			if (!mediaPermission) {
+				localStorage.setItem('media-permission', 'true');
+				getDeviceList();
+			}
+		});
 
 		return () => {
 			if (stream.current) {
@@ -92,6 +76,33 @@ export function useMediaDeviceInfo() {
 			}
 		};
 	}, [selectedDevices.audioinput, selectedDevices.videoinput]);
+
+	useEffect(() => {
+		// Audio output
+		function getAudioOutput() {
+			// Set the sinkId using the AudioContext api from the audiooutput device
+			if (!('setSinkId' in AudioContext.prototype)) {
+				console.log('AudioContext.setSinkId is not supported in your device');
+			} else {
+				if (devices.length !== 0) {
+					const localDeviceId = localStorage.getItem('audiooutput');
+					// Pick the first available audio output.
+					const deviceId = localDeviceId ?? '';
+
+					if (videoRef.current) videoRef.current.setSinkId?.(deviceId);
+
+					dispatch(setaudiocontextloading(false));
+					dispatch(setselecteddevices({ audiooutput: deviceId }));
+
+					if (deviceId !== localDeviceId) {
+						localStorage.setItem('audiooutput', deviceId);
+					}
+				}
+			}
+		}
+
+		getAudioOutput();
+	}, [devices]);
 
 	return { stream, videoRef };
 }

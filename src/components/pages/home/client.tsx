@@ -8,15 +8,15 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils/cn';
-import { Fragment, MutableRefObject, RefObject } from 'react';
+import { Fragment, RefObject } from 'react';
 
 export function Webrtc() {
-	const { stream, videoRef } = useMediaDeviceInfo();
+	const { videoRef } = useMediaDeviceInfo();
 	const { streamLoading } = useAppSelector((state) => state.mediaDeviceSlice);
 
 	return (
 		<div className='flex items-start justify-center gap-5'>
-			<MediaDevices stream={stream} videoRef={videoRef} />
+			<MediaDevices videoRef={videoRef} />
 			<div className='w-full'>
 				{streamLoading ? <p>Loading...</p> : null}
 				<video ref={videoRef} className='w-full h-[calc(100vh_-_58px)] rounded-xl' id='localVideo' autoPlay playsInline controls={false}>
@@ -27,10 +27,9 @@ export function Webrtc() {
 	);
 }
 
-type Stream = MutableRefObject<MediaStream | undefined>;
 type VideoRef = RefObject<HTMLVideoElement>;
 
-function MediaDevices({ stream, videoRef }: { stream: Stream; videoRef: VideoRef }) {
+function MediaDevices({ videoRef }: { videoRef: VideoRef }) {
 	return (
 		<div className='w-full'>
 			<Accordion type='multiple'>
@@ -125,13 +124,16 @@ function VideoInputDevices() {
 
 function AudioOutputDevices({ videoRef }: { videoRef: VideoRef }) {
 	const { devices, audioContextLoading } = useAppSelector((state) => state.mediaDeviceSlice);
-	const audioOutputDevices = devices.filter((device) => device.kind === 'audiooutput' && device.deviceId !== 'default');
+	const audioOutputDevices = devices
+		.filter((device) => device.kind === 'audiooutput')
+		.map((device) => ({ ...device, deviceId: device.deviceId === 'default' ? '' : device.deviceId }));
 
 	function handleValueChange(val: string) {
 		dispatch(setaudiocontextloading(true));
 		videoRef.current?.setSinkId?.(val);
 		dispatch(setselecteddevices({ audiooutput: val }));
 		dispatch(setaudiocontextloading(false));
+		localStorage.setItem('audiooutput', val);
 	}
 
 	return (
