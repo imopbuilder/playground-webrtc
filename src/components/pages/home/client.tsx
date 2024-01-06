@@ -10,24 +10,18 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils/cn';
 import { Fragment, RefObject } from 'react';
 
+type VideoRef = RefObject<HTMLVideoElement>;
+
 export function Webrtc() {
 	const { videoRef } = useMediaDeviceInfo();
-	const { streamLoading } = useAppSelector((state) => state.mediaDeviceSlice);
 
 	return (
 		<div className='flex items-start justify-center gap-5'>
 			<MediaDevices videoRef={videoRef} />
-			<div className='w-full'>
-				{streamLoading ? <p>Loading...</p> : null}
-				<video ref={videoRef} className='w-full h-[calc(100vh_-_58px)] rounded-xl' id='localVideo' autoPlay playsInline controls={false}>
-					<track kind='captions' />
-				</video>
-			</div>
+			<Video videoRef={videoRef} />
 		</div>
 	);
 }
-
-type VideoRef = RefObject<HTMLVideoElement>;
 
 function MediaDevices({ videoRef }: { videoRef: VideoRef }) {
 	return (
@@ -37,6 +31,25 @@ function MediaDevices({ videoRef }: { videoRef: VideoRef }) {
 				<VideoInputDevices />
 				<AudioOutputDevices videoRef={videoRef} />
 			</Accordion>
+		</div>
+	);
+}
+
+function Video({ videoRef }: { videoRef: VideoRef }) {
+	const { streamLoading } = useAppSelector((state) => state.mediaDeviceSlice);
+
+	if (streamLoading)
+		return (
+			<div className='w-full'>
+				<p>Loading...</p>
+			</div>
+		);
+
+	return (
+		<div className='w-full'>
+			<video ref={videoRef} className='w-full h-auto rounded-lg' id='localVideo' autoPlay playsInline controls={false}>
+				<track kind='captions' />
+			</video>
 		</div>
 	);
 }
@@ -116,7 +129,7 @@ function VideoInputDevices() {
 
 	return (
 		<Fragment>
-			{/* Video accordion 🎥 */}
+			{/* Video input accordion 🎥 */}
 			<Devices title='Camera' kind='videoinput' loading={streamLoading} devices={videoInputDevices} onValueChange={handleValueChange} />
 		</Fragment>
 	);
